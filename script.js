@@ -37,16 +37,48 @@ window.addEventListener('resize', () => {
     canvas.height = window.innerHeight;
 });
 
-// Button click animations
+// Button click animations with explosion effect
 const buttons = document.querySelectorAll('.gift-btn');
 
 buttons.forEach(btn => {
     btn.addEventListener('click', function() {
-        this.classList.add('clicked');
         const url = this.getAttribute('data-url');
+        const imgSrc = this.querySelector('img').src;
+        const rect = this.getBoundingClientRect();
+        
+        // Create 20 tiny logo particles
+        for (let i = 0; i < 20; i++) {
+            createParticle(imgSrc, rect);
+        }
         
         setTimeout(() => {
             window.open(url, '_blank');
-        }, 500);
+        }, 800);
     });
 });
+
+function createParticle(imgSrc, buttonRect) {
+    const particle = document.createElement('img');
+    particle.src = imgSrc;
+    particle.className = 'particle';
+    
+    // Start from center of button
+    particle.style.left = (buttonRect.left + buttonRect.width / 2) + 'px';
+    particle.style.top = (buttonRect.top + buttonRect.height / 2) + 'px';
+    
+    // Random direction
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 100 + Math.random() * 100;
+    const endX = Math.cos(angle) * distance;
+    const endY = Math.sin(angle) * distance;
+    
+    particle.style.setProperty('--endX', endX + 'px');
+    particle.style.setProperty('--endY', endY + 'px');
+    
+    document.body.appendChild(particle);
+    
+    // Remove after animation
+    setTimeout(() => {
+        particle.remove();
+    }, 1000);
+}
